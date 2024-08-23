@@ -15,6 +15,8 @@ import (
 
 type Consumer struct {
 	Consumer            rocketmq.PushConsumer
+	namespace           string
+	groupName           string
 	serverName          string
 	messageBatchMaxSize int // default 1
 	subscribeTopic      map[string]struct{}
@@ -32,6 +34,8 @@ func NewConsumer(conf *RocketMQConfig) (c *Consumer) {
 	}
 	c = &Consumer{
 		Consumer:       nil,
+		namespace:      conf.Namespace,
+		groupName:      conf.GroupName,
 		serverName:     conf.EndPoint,
 		subscribeTopic: make(map[string]struct{}),
 		conf:           conf,
@@ -62,7 +66,8 @@ func (c *Consumer) Conn() (conn *Consumer, err error) {
 
 // Start start subscribe
 func (c *Consumer) Start() (err error) {
-	xlog.Infof("count [%d] start subscribe", len(c.subscribeTopic))
+	xlog.Warnf("count [%d] start subscribe", len(c.subscribeTopic))
+	primitive.PanicHandler = c.defaultPanicHandler
 	return c.Consumer.Start()
 }
 

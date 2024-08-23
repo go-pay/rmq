@@ -12,6 +12,8 @@ import (
 
 type Producer struct {
 	Producer   rocketmq.Producer
+	namespace  string
+	groupName  string
 	serverName string
 	conf       *RocketMQConfig
 	ops        []producer.Option
@@ -24,6 +26,8 @@ func NewProducer(conf *RocketMQConfig) (p *Producer) {
 	}
 	p = &Producer{
 		Producer:   nil,
+		namespace:  conf.Namespace,
+		groupName:  conf.GroupName,
 		serverName: conf.EndPoint,
 		conf:       conf,
 		ops:        ops,
@@ -41,6 +45,7 @@ func (p *Producer) Conn() (conn *Producer, err error) {
 		return nil, err
 	}
 	p.Producer = defaultProducer
+	primitive.PanicHandler = p.defaultPanicHandler
 	if err = p.Producer.Start(); err != nil {
 		return nil, err
 	}

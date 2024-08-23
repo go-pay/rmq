@@ -5,6 +5,7 @@ import (
 	"github.com/apache/rocketmq-client-go/v2/primitive"
 	"github.com/apache/rocketmq-client-go/v2/producer"
 	"github.com/go-pay/limiter"
+	"github.com/go-pay/xlog"
 )
 
 const (
@@ -60,4 +61,12 @@ func defaultProducerOps(conf *RocketMQConfig) (ops []producer.Option) {
 		ops = append(ops, producer.WithGroupName(conf.GroupName))
 	}
 	return ops
+}
+
+func (c *Consumer) defaultPanicHandler(e interface{}) {
+	xlog.Errorf("[%s] rocketmq consumer group [%s] panic: %v", c.namespace, c.groupName, e)
+}
+
+func (p *Producer) defaultPanicHandler(e interface{}) {
+	xlog.Errorf("[%s] rocketmq producer group [%s] panic: %v", p.namespace, p.groupName, e)
 }
