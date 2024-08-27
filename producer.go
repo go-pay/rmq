@@ -63,7 +63,7 @@ func (p *Producer) SendSyncSingle(c context.Context, message *primitive.Message)
 	if p.Producer == nil {
 		return nil, fmt.Errorf("[%s] is nil", p.serverName)
 	}
-	return p.Producer.SendSync(c, message)
+	return p.Producer.SendSync(context.WithoutCancel(c), message)
 }
 
 // SendAsyncSingle 异步单条消息发送，对应消费 topic 的 MessageBatchMaxSize = 1时用
@@ -74,7 +74,7 @@ func (p *Producer) SendAsyncSingle(c context.Context, callback func(ctx context.
 	if callback == nil {
 		callback = func(ctx context.Context, result *primitive.SendResult, err error) {}
 	}
-	err = p.Producer.SendAsync(c, callback, message)
+	err = p.Producer.SendAsync(context.WithoutCancel(c), callback, message)
 	if err != nil {
 		return err
 	}
@@ -85,5 +85,5 @@ func (p *Producer) SendOneWaySingle(c context.Context, message *primitive.Messag
 	if p.Producer == nil {
 		return fmt.Errorf("[%s] is nil", p.serverName)
 	}
-	return p.Producer.SendOneWay(c, message)
+	return p.Producer.SendOneWay(context.WithoutCancel(c), message)
 }
